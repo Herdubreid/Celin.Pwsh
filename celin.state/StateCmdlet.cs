@@ -1,4 +1,6 @@
-﻿using System.Management.Automation;
+﻿using System.Collections;
+using System.Management.Automation;
+using System.Reflection.Emit;
 
 namespace celin.state;
 
@@ -20,86 +22,100 @@ public class New : PSCmdlet
 		WriteObject(state);
 	}
 }
-
-[Cmdlet(VerbsCommon.Set, Nouns.Base)]
-[Alias("cs")]
-public class Set : BaseCmdlet
+[Cmdlet(VerbsOther.Use, Nouns.Base)]
+public class Use : PSCmdlet
 {
 	[Parameter(Position = 0, Mandatory = true)]
-	public required PSObject Member { get; set; }
-	[Parameter(Position = 1, Mandatory = true, ValueFromPipeline = true)]
-	public required PSObject Value { get; set; }
+	public required PSObject Name { get; set; }
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
 
-		StateMachine.Current[Member] = Value;
-	}
-}
-
-[Cmdlet(VerbsCommon.Get, Nouns.Base)]
-[Alias("cg")]
-public class Get : BaseCmdlet
-{
-	[Parameter(Position = 0, Mandatory = true)]
-	public required object Member { get; set; }
-	[Parameter]
-	public SwitchParameter Label { get; set; }
-	protected override void ProcessRecord()
-	{
-		base.ProcessRecord();
-
-		if (Label.IsPresent)
+		var state = StateMachine.States[Name];
+		if (state == null)
 		{
-			var label = StateMachine.Current.States.Find(x => x.Label == Member);
-			if (label != null)
-			{
-				WriteObject(label);
-			}
-			else
-			{
-				throw new InvalidOperationException($"State ${StateMachine.Current.Name} does not have label '${Member}'");
-			}
+			throw new ArgumentException($"State '${Name}' does not exist!");
 		}
-		else
+
+		StateMachine.Current = new State(Name, state);
+
+		WriteObject(StateMachine.Current);
+	}
+
+	[Cmdlet(VerbsCommon.Set, Nouns.Base)]
+	[Alias("cset", "cs")]
+	public class Set : BaseCmdlet
+	{
+		[Parameter(Position = 0, Mandatory = true)]
+		public required PSObject Member { get; set; }
+		[Parameter(Position = 1, Mandatory = true, ValueFromPipeline = true)]
+		public required PSObject Value { get; set; }
+		protected override void ProcessRecord()
 		{
-			WriteObject(StateMachine.Current[Member.ToString()]);
+			base.ProcessRecord();
+
+			StateMachine.Current[Member] = Value;
 		}
 	}
-}
 
-[Cmdlet(VerbsLifecycle.Resume, Nouns.Base)]
-public class Resume : BaseCmdlet
-{
-	protected override void ProcessRecord()
+	[Cmdlet(VerbsCommon.Get, Nouns.Base)]
+	public class Get : BaseCmdlet
 	{
-		base.ProcessRecord();
+		[Parameter(Position = 0, Mandatory = true)]
+		public required PSObject Label { get; set; }
+		[Parameter(Position = 1)]
+		public PSObject? Name { get; set; }
+		protected override void ProcessRecord()
+		{
+			base.ProcessRecord();
 
-		StateMachine.Current.Resume();
+			var state = Name == null
+				? StateMachine.Current?.States
+				: StateMachine.States[Name];
+
+			if (state == null)
+				throw new ArgumentException($"State '${Name}' does not exist!");
+
+			var label = state.Find(x => Label.CompareTo(x.Label) == 0);
+
+			if (label == null)
+				throw new ArgumentException($"State ${StateMachine.Current?.Name} does not have label '${Label}'");
+
+			WriteObject(new Hashtable(label.Value));
+		}
 	}
-}
 
-[Cmdlet(VerbsCommon.Undo, Nouns.Base)]
-public class Undo : BaseCmdlet
-{
-	protected override void ProcessRecord()
+	[Cmdlet(VerbsLifecycle.Resume, Nouns.Base)]
+	public class Resume : BaseCmdlet
 	{
-		base.ProcessRecord();
+		protected override void ProcessRecord()
+		{
+			base.ProcessRecord();
 
-		StateMachine.Current.Undo();
+			StateMachine.Current?.Resume();
+		}
 	}
-}
-[Cmdlet(VerbsLifecycle.Confirm, Nouns.Base)]
-public class Confirm : BaseCmdlet
-{
-	[Parameter(Position = 0, Mandatory = true)]
-	public required PSObject Label { get; set; }
-	[Parameter]
-	public SwitchParameter Override { get; set; }
-	protected override void ProcessRecord()
-	{
-		base.ProcessRecord();
 
-		StateMachine.Current.Label(Label, Override.IsPresent);
+	[Cmdlet(VerbsCommon.Undo, Nouns.Base)]
+	public class Undo : BaseCmdlet
+	{
+		protected override void ProcessRecord()
+		{
+			base.ProcessRecord();
+
+			StateMachine.Current?.Undo();
+		}
+	}
+	[Cmdlet(VerbsLifecycle.Confirm, Nouns.Base)]
+	public class Confirm : BaseCmdlet
+	{
+		[Parameter(Position = 0, Mandatory = true)]
+		public required PSObject Label { get; set; }
+		protected override void ProcessRecord()
+		{
+			base.ProcessRecord();
+
+			StateMachine.Current?.SetLabel(Label);
+		}
 	}
 }

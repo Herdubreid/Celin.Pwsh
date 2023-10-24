@@ -1,11 +1,10 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace celin.state;
 
 public record StateValue(PSObject? Label, Dictionary<PSObject, PSObject?> Value);
-public class State : IEnumerable<StateValue>
+public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 {
 	public PSObject Name { get; }
 	public List<StateValue> States { get; }
@@ -19,7 +18,7 @@ public class State : IEnumerable<StateValue>
 			{
 				if (_current.Value[member] != null)
 				{
-					var d = new Dictionary<PSObject, PSObject>();
+					var d = Last().ToDictionary(x => x.Key, x => default(PSObject));
 					States.Add(new StateValue(null, d));
 					_current = States.Last();
 				}
@@ -31,9 +30,10 @@ public class State : IEnumerable<StateValue>
 			}
 		}
 	}
-	public Dictionary<PSObject, PSObject?> Last
+	public Dictionary<PSObject, PSObject?> Last(int skip = 0)
 		=> States
 			.Where(x => x.Label == null)
+			.SkipLast(skip)
 			.SelectMany(x => x.Value)
 			.GroupBy(x => x.Key)
 			.ToDictionary(group => group.Key, group =>
@@ -41,7 +41,7 @@ public class State : IEnumerable<StateValue>
 				var l = group.Where(x => x.Value != null);
 				return l.Any() ? l.Last().Value : null;
 			});
-	public Hashtable? Value => new Hashtable(Last);
+	public Hashtable? Value => new Hashtable(Last());
 	public void Resume()
 		=> _current = States.Last();
 	public void Undo()
@@ -51,30 +51,93 @@ public class State : IEnumerable<StateValue>
 
 		throw new InvalidOperationException("Can't undo initial state");
 	}
-	public void Label(PSObject Label, bool force)
+	public Array Labels
 	{
+		get
+		{
+			var d = States
+				.Where(x => x.Label != null)
+				.Select(x =>
+				{
+					var h = new Hashtable(x.Value)
+					{
+						{ "#", x.Label }
+					};
+					return h;
+				});
+			return d.ToArray();
+		}
+	}
+
+	public Array Values
+	{
+		get
+		{
+			var v = States
+				.Where(x => x.Label == null);
+			var d = v
+				.Select((x, i) =>
+				{
+					var d = v
+					.SkipLast(v.Count() - (i + 1))
+					.SelectMany(x => x.Value)
+					.GroupBy(x => x.Key)
+					.ToDictionary(group => group.Key, group =>
+					{
+						var l = group.Where(x => x.Value != null);
+						return l.Any() ? l.Last().Value : null;
+					});
+					return d;
+				});
+			var h = d
+				.Reverse()
+				.Select(x => new Hashtable(x));
+			return h.ToArray();
+		}
+	}
+	public void SetLabel(PSObject label, int skip = 0, bool clear = false, bool force = false)
+	{
+		var last = Last(skip);
+		if (last == null)
+			throw new ArgumentException($"Can't skip ${skip} last!");
 		if (force)
 		{
-			States.RemoveAll(x => x.Label == Label);
+			States.RemoveAll(x => label.CompareTo(x.Label) == 0);
 		}
 		else
 		{
-			if (null != States.Find(x => x.Label == Label))
+			var exist = States.Find(x => label.CompareTo(x.Label) == 0);
+			if (null != exist)
 			{
-				throw new InvalidOperationException($"'${Label}' already exists!");
+				throw new InvalidOperationException($"'${label}' already exists!");
 			}
 		}
-		States.Add(new StateValue(Label, Last));
-		States.Add(new StateValue(null, new Dictionary<PSObject, PSObject?>()));
-		States.RemoveAll(x => x.Label == null);
-		_current = States.Last();
+		var state = clear
+			? last.ToDictionary(x => x.Key, x => default(PSObject))
+			: new Dictionary<PSObject, PSObject?>(last);
+		if (skip > 0)
+		{
+			int from = States.FindIndex(x => x.Label == null);
+			int cnt = States.FindAll(x => x.Label == null).Count();
+			States.RemoveRange(from, cnt - skip);
+			if (!clear)
+				States.Insert(from, new StateValue(null, state));
+			States.Insert(from, new StateValue(label, last));
+		}
+		else
+		{
+			States.Add(new StateValue(label, last));
+			States.RemoveAll(x => x.Label == null);
+			States.Add(new StateValue(null, state));
+			_current = States.Last();
+		}
 	}
 
-	IEnumerator IEnumerable.GetEnumerator()
-		=> States.GetEnumerator();
+	public IEnumerator<KeyValuePair<PSObject, PSObject?>> GetEnumerator()
+		=> Last().GetEnumerator();
 
-	IEnumerator<StateValue> IEnumerable<StateValue>.GetEnumerator()
-		=> States.GetEnumerator();
+	IEnumerator IEnumerable.GetEnumerator()
+		=> Last().GetEnumerator();
 
 	public State(PSObject name, List<StateValue> states)
 	{
