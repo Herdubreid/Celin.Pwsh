@@ -18,7 +18,7 @@ A simple way to manage variables as state objects.
 
 An example to demonstrate the basic concepts.
 
-```ps
+```powershell
 # Make sure to use the AllowPrerelease flag
 install-Module celin.state -AllowPrerelease
 
