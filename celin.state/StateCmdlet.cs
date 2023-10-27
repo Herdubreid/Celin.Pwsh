@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Management.Automation;
-using System.Reflection.Emit;
 
 namespace celin.state;
 
@@ -48,8 +47,8 @@ public class Use : PSCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true)]
 		public required PSObject Member { get; set; }
-		[Parameter(Position = 1, Mandatory = true, ValueFromPipeline = true)]
-		public required PSObject Value { get; set; }
+		[Parameter(Position = 1, ValueFromPipeline = true)]
+		public required PSObject? Value { get; set; }
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
