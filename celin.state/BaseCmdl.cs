@@ -12,7 +12,7 @@ public class BaseCmdlet : PSCmdlet
 	{
 		base.BeginProcessing();
 
-		if (StateMachine.Current == null)
+		if (StateMachine.Default == null)
 			throw new InvalidOperationException("No current state!");
 	}
 }

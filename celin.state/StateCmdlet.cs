@@ -30,15 +30,15 @@ public class Use : PSCmdlet
 	{
 		base.ProcessRecord();
 
-		var state = StateMachine.States[Name];
+		var state = StateMachine.StateNames[Name];
 		if (state == null)
 		{
 			throw new ArgumentException($"State '${Name}' does not exist!");
 		}
 
-		StateMachine.Current = new State(Name, state);
+		StateMachine.Default = new State(Name, state);
 
-		WriteObject(StateMachine.Current);
+		WriteObject(StateMachine.Default);
 	}
 
 	[Cmdlet(VerbsCommon.Set, Nouns.Base)]
@@ -48,12 +48,16 @@ public class Use : PSCmdlet
 		[Parameter(Position = 0, Mandatory = true)]
 		public required PSObject Member { get; set; }
 		[Parameter(Position = 1, ValueFromPipeline = true)]
-		public required PSObject? Value { get; set; }
+		public PSObject? Value { get; set; }
+		[Parameter]
+		public SwitchParameter FalseIfNull { get; set; }
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
 
-			StateMachine.Current[Member] = Value;
+			var v = FalseIfNull.IsPresent ? Value ?? false : Value;
+
+			StateMachine.Default[Member] = v;
 		}
 	}
 
@@ -64,23 +68,29 @@ public class Use : PSCmdlet
 		public required PSObject Label { get; set; }
 		[Parameter(Position = 1)]
 		public PSObject? Name { get; set; }
+		[Parameter()]
+		public SwitchParameter FalseIfNone { get; set; }
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
 
 			var state = Name == null
-				? StateMachine.Current?.States
-				: StateMachine.States[Name];
+				? StateMachine.Default?.States
+				: StateMachine.StateNames[Name];
 
 			if (state == null)
 				throw new ArgumentException($"State '${Name}' does not exist!");
 
 			var label = state.Find(x => Label.CompareTo(x.Label) == 0);
-
 			if (label == null)
-				throw new ArgumentException($"State ${StateMachine.Current?.Name} does not have label '${Label}'");
-
-			WriteObject(new Hashtable(label.Value));
+			{
+				if (FalseIfNone.IsPresent)
+					WriteObject(false);
+				else
+					throw new ArgumentException($"State ${StateMachine.Default?.Name} does not have label '${Label}'");
+			}
+			else
+				WriteObject(new Hashtable(label.Value));
 		}
 	}
 
@@ -91,7 +101,7 @@ public class Use : PSCmdlet
 		{
 			base.ProcessRecord();
 
-			StateMachine.Current?.Resume();
+			StateMachine.Default?.Resume();
 		}
 	}
 
@@ -102,7 +112,7 @@ public class Use : PSCmdlet
 		{
 			base.ProcessRecord();
 
-			StateMachine.Current?.Undo();
+			StateMachine.Default?.Undo();
 		}
 	}
 	[Cmdlet(VerbsLifecycle.Confirm, Nouns.Base)]
@@ -114,7 +124,7 @@ public class Use : PSCmdlet
 		{
 			base.ProcessRecord();
 
-			StateMachine.Current?.SetLabel(Label);
+			StateMachine.Default?.SetLabel(Label);
 		}
 	}
 }

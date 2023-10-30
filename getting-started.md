@@ -15,7 +15,7 @@ install-Module celin.state -AllowPrerelease
 
 ## Example
 
-An example to demonstrate the basic concepts.
+An example to demonstrate some basic concepts.
 
 ```powershell
 # Initialise a new state 'test' with members 'a', 'b' and 'c'

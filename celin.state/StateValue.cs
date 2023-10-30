@@ -95,11 +95,11 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 			return h.ToArray();
 		}
 	}
-	public void SetLabel(PSObject label, int skip = 0, bool clear = false, bool force = false)
+	public Hashtable SetLabel(PSObject label, int skip = 0, bool clear = false, bool force = false)
 	{
 		var last = Last(skip);
 		if (last == null)
-			throw new ArgumentException($"Can't skip ${skip} last!");
+			throw new ArgumentException($"Can't skip ${skip} states!");
 		if (force)
 		{
 			States.RemoveAll(x => label.CompareTo(x.Label) == 0);
@@ -112,7 +112,7 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 				throw new InvalidOperationException($"'${label}' already exists!");
 			}
 		}
-		var state = clear
+		var nextState = clear
 			? last.ToDictionary(x => x.Key, x => default(PSObject))
 			: new Dictionary<PSObject, PSObject?>(last);
 		if (skip > 0)
@@ -121,16 +121,18 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 			int cnt = States.FindAll(x => x.Label == null).Count();
 			States.RemoveRange(from, cnt - skip);
 			if (!clear)
-				States.Insert(from, new StateValue(null, state));
+				States.Insert(from, new StateValue(null, nextState));
 			States.Insert(from, new StateValue(label, last));
 		}
 		else
 		{
 			States.Add(new StateValue(label, last));
 			States.RemoveAll(x => x.Label == null);
-			States.Add(new StateValue(null, state));
+			States.Add(new StateValue(null, nextState));
 			_current = States.Last();
 		}
+
+		return new Hashtable(last);
 	}
 
 	public IEnumerator<KeyValuePair<PSObject, PSObject?>> GetEnumerator()
@@ -148,21 +150,21 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 }
 public static class StateMachine
 {
-	public static IDictionary<PSObject, List<StateValue>> States { get; set; }
+	public static IDictionary<PSObject, List<StateValue>> StateNames { get; set; }
 		= new Dictionary<PSObject, List<StateValue>>();
-	public static State? Current { get; set; }
+	public static State? Default { get; set; }
 	public static State Add(PSObject name, PSObject[] members, bool force)
 	{
-		if (States.ContainsKey(name) && force)
+		if (StateNames.ContainsKey(name) && force)
 		{
-			States.Remove(name);
+			StateNames.Remove(name);
 		}
 		var d = new Dictionary<PSObject, PSObject?>();
 		foreach (var fn in members)
 			d.Add(fn, null);
-		States.Add(name, new List<StateValue> { new StateValue(null, d) });
-		Current = new State(name, States.Last().Value);
+		StateNames.Add(name, new List<StateValue> { new StateValue(null, d) });
+		Default = new State(name, StateNames[name]);
 
-		return Current;
+		return Default;
 	}
 }
