@@ -12,13 +12,18 @@ public class New : PSCmdlet
 	public required PSObject[] Members { get; set; }
 	[Parameter]
 	public SwitchParameter Force { get; set; }
+	[Parameter]
+	public SwitchParameter UseIfExist { get; set; }
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
 
-		var state = StateMachine.Add(Name, Members, Force.IsPresent);
+		if (UseIfExist.IsPresent && StateMachine.StateNames.ContainsKey(Name))
+			StateMachine.Default = new State(Name, StateMachine.StateNames[Name]);
+		else
+			StateMachine.Add(Name, Members, Force.IsPresent);
 
-		WriteObject(state);
+		WriteObject(StateMachine.Default);
 	}
 }
 [Cmdlet(VerbsOther.Use, Nouns.Base)]
