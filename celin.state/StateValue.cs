@@ -1,15 +1,27 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace celin.state;
 
-public record StateValue(PSObject? Label, Dictionary<PSObject, PSObject?> Value);
-public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
+public record StateValue(string Label, Dictionary<string, PSObject?> Value);
+public class State : IEnumerable<Hashtable>
 {
-	public PSObject Name { get; }
+	public string Name { get; }
 	public List<StateValue> States { get; }
 	StateValue _current;
-	public PSObject this[PSObject member]
+	public IEnumerable<PSObject> Trace
+		=> States.Select(x =>
+		{
+			var po = new PSObject();
+			po.Properties.Add(new PSNoteProperty("#", x.Label));
+			foreach (var v in x.Value)
+			{
+				po.Properties.Add(new PSNoteProperty(v.Key, v.Value));
+			}
+			return po;
+		});
+	public PSObject this[string member]
 	{
 		get => _current.Value[member];
 		set
@@ -30,7 +42,7 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 			}
 		}
 	}
-	public Dictionary<PSObject, PSObject?> Last(int skip = 0)
+	public Dictionary<string, PSObject?> Last(int skip = 0)
 		=> States
 			.Where(x => x.Label == null)
 			.SkipLast(skip)
@@ -41,7 +53,6 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 				var l = group.Where(x => x.Value != null);
 				return l.Any() ? l.Last().Value : null;
 			});
-	public Hashtable? Value => new Hashtable(Last());
 	public void Resume()
 		=> _current = States.Last();
 	public void Undo()
@@ -68,7 +79,6 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 			return d.ToArray();
 		}
 	}
-
 	public Array Values
 	{
 		get
@@ -95,7 +105,7 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 			return h.ToArray();
 		}
 	}
-	public Hashtable SetLabel(PSObject label, int skip = 0, bool clear = false, bool force = false)
+	public Hashtable SetLabel(string label, int skip = 0, bool clear = false, bool force = false)
 	{
 		var last = Last(skip);
 		if (last == null)
@@ -114,7 +124,7 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 		}
 		var nextState = clear
 			? last.ToDictionary(x => x.Key, x => default(PSObject))
-			: new Dictionary<PSObject, PSObject?>(last);
+			: new Dictionary<string, PSObject?>(last);
 		if (skip > 0)
 		{
 			int from = States.FindIndex(x => x.Label == null);
@@ -134,14 +144,17 @@ public class State : IEnumerable<KeyValuePair<PSObject, PSObject?>>
 
 		return new Hashtable(last);
 	}
-
-	public IEnumerator<KeyValuePair<PSObject, PSObject?>> GetEnumerator()
-		=> Last().GetEnumerator();
-
+	IEnumerator<Hashtable> IEnumerable<Hashtable>.GetEnumerator()
+	{
+		IEnumerable<Hashtable> en = new[] { new Hashtable(Last()) };
+		return en.GetEnumerator();
+	}
 	IEnumerator IEnumerable.GetEnumerator()
-		=> Last().GetEnumerator();
-
-	public State(PSObject name, List<StateValue> states)
+	{
+		IEnumerable<Hashtable> en = new[] { new Hashtable(Last()) };
+		return en.GetEnumerator();
+	}
+	public State(string name, List<StateValue> states)
 	{
 		Name = name;
 		States = states;
@@ -153,13 +166,13 @@ public static class StateMachine
 	public static IDictionary<PSObject, List<StateValue>> StateNames { get; set; }
 		= new Dictionary<PSObject, List<StateValue>>();
 	public static State? Default { get; set; }
-	public static State Add(PSObject name, PSObject[] members, bool force)
+	public static State Add(string name, string[] members, bool force)
 	{
 		if (StateNames.ContainsKey(name) && force)
 		{
 			StateNames.Remove(name);
 		}
-		var d = new Dictionary<PSObject, PSObject?>();
+		var d = new Dictionary<string, PSObject?>();
 		foreach (var fn in members)
 			d.Add(fn, null);
 		StateNames.Add(name, new List<StateValue> { new StateValue(null, d) });

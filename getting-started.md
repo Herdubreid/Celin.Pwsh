@@ -60,10 +60,10 @@ $var
 cs a "More tests"
 cs b $true
 cs c 350
-# Display value as Hashtable
-$var.value
+# Display values
+$var
 # Individual values can be accessed with the dot syntax
-$var.value.c + 200
+$var.c + 200
 # Display labels array
 $var.labels
 # Retrieve individual label

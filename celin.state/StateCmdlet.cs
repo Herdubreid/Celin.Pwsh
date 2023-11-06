@@ -7,9 +7,9 @@ namespace celin.state;
 public class New : PSCmdlet
 {
 	[Parameter(Position = 0, Mandatory = true)]
-	public required PSObject Name { get; set; }
+	public required string Name { get; set; }
 	[Parameter(Position = 1, Mandatory = true)]
-	public required PSObject[] Members { get; set; }
+	public required string[] Members { get; set; }
 	[Parameter]
 	public SwitchParameter Force { get; set; }
 	[Parameter]
@@ -30,7 +30,7 @@ public class New : PSCmdlet
 public class Use : PSCmdlet
 {
 	[Parameter(Position = 0, Mandatory = true)]
-	public required PSObject Name { get; set; }
+	public required string Name { get; set; }
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
@@ -51,7 +51,7 @@ public class Use : PSCmdlet
 	public class Set : BaseCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true)]
-		public required PSObject Member { get; set; }
+		public required string Member { get; set; }
 		[Parameter(Position = 1, ValueFromPipeline = true)]
 		public PSObject? Value { get; set; }
 		[Parameter]
@@ -70,9 +70,9 @@ public class Use : PSCmdlet
 	public class Get : BaseCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true)]
-		public required PSObject Label { get; set; }
+		public required string Label { get; set; }
 		[Parameter(Position = 1)]
-		public PSObject? Name { get; set; }
+		public string? Name { get; set; }
 		[Parameter()]
 		public SwitchParameter FalseIfNone { get; set; }
 		protected override void ProcessRecord()
@@ -124,7 +124,7 @@ public class Use : PSCmdlet
 	public class Confirm : BaseCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true)]
-		public required PSObject Label { get; set; }
+		public required string Label { get; set; }
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
