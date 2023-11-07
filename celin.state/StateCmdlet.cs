@@ -47,7 +47,7 @@ public class Use : PSCmdlet
 	}
 
 	[Cmdlet(VerbsCommon.Set, Nouns.Base)]
-	[Alias("cset", "cs")]
+	[Alias("cset")]
 	public class Set : BaseCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true)]
