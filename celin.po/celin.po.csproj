@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,12 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Management.Automation" Version="7.3.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="celin.state.psd1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

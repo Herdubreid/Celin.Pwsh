@@ -5,7 +5,9 @@ VisualStudioVersion = 17.8.34205.153
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "celin.state", "celin.state\celin.state.csproj", "{8AFB0E9D-CF0F-4F46-8AC6-CED12039B5AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3B1DBBFA-7725-4BFD-88F7-8739272B8DA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{3B1DBBFA-7725-4BFD-88F7-8739272B8DA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "celin.po", "celin.po\celin.po.csproj", "{A5C90F5A-DC2E-419F-BB64-E4371D41D2F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3B1DBBFA-7725-4BFD-88F7-8739272B8DA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1DBBFA-7725-4BFD-88F7-8739272B8DA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B1DBBFA-7725-4BFD-88F7-8739272B8DA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5C90F5A-DC2E-419F-BB64-E4371D41D2F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5C90F5A-DC2E-419F-BB64-E4371D41D2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5C90F5A-DC2E-419F-BB64-E4371D41D2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5C90F5A-DC2E-419F-BB64-E4371D41D2F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
