@@ -3,7 +3,7 @@ remote_theme: just-the-docs/just-the-docs
 
 color_scheme: dark
 
-baseurl: "/state"
+baseurl: "/Celin.Pwsh"
 url: "https://celin.io"
 aux_links:
   "Celin.State on GitHub":
