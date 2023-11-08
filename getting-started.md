@@ -26,13 +26,13 @@ $var = new-celin.state test a,b,c -Force
 Set-Celin.State a "This is a Test for A"
 # Display the state
 $var
-# Set member 'b' using Alias 'cset' ('cs' is another Alias)
-cset c 200
+# Set member 'b' using Alias 'cstate'
+cstate c 200
 # Display the state
 $var
 
 # Set member 'a' to a new value
-cset a "New Test for A"
+cstate a "New Test for A"
 # Display the state
 $var
 # Instead of overriding 'a', a new state record is created
@@ -57,9 +57,9 @@ $var.setlabel("second label", 0, $true)
 $var
 
 # Set new values
-cs a "More tests"
-cs b $true
-cs c 350
+cstate a "More tests"
+cstate b $true
+cstate c 350
 # Display values
 $var
 # Individual values can be accessed with the dot syntax
@@ -72,4 +72,6 @@ get-celin.state "my label"
 $label = $var.labels | where-Object {$_.'#' -eq "my label"}
 $label
 $label.a
+# Write a Trace log with changes
+$var.trace
 ```

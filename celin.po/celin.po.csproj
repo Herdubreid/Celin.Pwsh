@@ -10,4 +10,10 @@
     <PackageReference Include="System.Management.Automation" Version="7.3.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="celin.po.psd1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'celin.pwsh.dll'
+RootModule = 'celin.po.dll'
 
 # Version number of this module.
 ModuleVersion = '1.0.0'
@@ -100,19 +100,19 @@ PrivateData = @{
         # Tags = @()
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://raw.githubusercontent.com/Herdubreid/celin.pwsh/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://celin.io/Celin.Pwsh/'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://raw.githubusercontent.com/Herdubreid/herdubreid.github.io/master/favicon.ico'
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        # Prerelease = ''
+        Prerelease = 'beta'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
