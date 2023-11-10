@@ -14,14 +14,16 @@ public class New : PSCmdlet
 	public SwitchParameter Force { get; set; }
 	[Parameter]
 	public SwitchParameter UseIfExist { get; set; }
+	[Parameter]
+	public SwitchParameter Trace { get; set; }
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
 
 		if (UseIfExist.IsPresent && StateMachine.StateNames.ContainsKey(Name))
-			StateMachine.Default = new State(Name, StateMachine.StateNames[Name]);
+			StateMachine.Default = new State(Name, StateMachine.StateNames[Name], Trace);
 		else
-			StateMachine.Add(Name, Members, Force.IsPresent);
+			StateMachine.Add(Name, Members, Force, Trace);
 
 		WriteObject(StateMachine.Default);
 	}
@@ -31,6 +33,8 @@ public class Use : PSCmdlet
 {
 	[Parameter(Position = 0, Mandatory = true)]
 	public required string Name { get; set; }
+	[Parameter]
+	public SwitchParameter Trace { get; set; }
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
@@ -41,7 +45,7 @@ public class Use : PSCmdlet
 			throw new ArgumentException($"State '${Name}' does not exist!");
 		}
 
-		StateMachine.Default = new State(Name, state);
+		StateMachine.Default = new State(Name, state, Trace);
 
 		WriteObject(StateMachine.Default);
 	}

@@ -7,6 +7,7 @@ public record StateValue(string Label, Dictionary<string, PSObject?> Value);
 public class State : IEnumerable<Hashtable>
 {
 	public string Name { get; }
+	public bool Tracing { get; }
 	public List<StateValue> States { get; }
 	StateValue _current;
 	public IEnumerable<PSObject> Trace
@@ -16,10 +17,10 @@ public class State : IEnumerable<Hashtable>
 			po.Properties.Add(new PSNoteProperty("#", x.Label));
 			foreach (var v in x.Value)
 			{
-				po.Properties.Add(new PSNoteProperty(v.Key, v.Value));
+				po.Properties.Add(new PSNoteProperty(v.Key, v.Value?.ToString()));
 			}
 			return po;
-		});
+		}).ToArray();
 	public PSObject this[string member]
 	{
 		get => _current.Value[member];
@@ -30,7 +31,7 @@ public class State : IEnumerable<Hashtable>
 				if (_current.Value[member] != null)
 				{
 					var d = Last().ToDictionary(x => x.Key, x => default(PSObject));
-					States.Add(new StateValue(null, d));
+					States.Add(new StateValue(string.Empty, d));
 					_current = States.Last();
 				}
 				_current.Value[member] = value;
@@ -43,7 +44,7 @@ public class State : IEnumerable<Hashtable>
 	}
 	public Dictionary<string, PSObject?> Last(int skip = 0)
 		=> States
-			.Where(x => x.Label == null)
+			.Where(x => string.IsNullOrEmpty(x.Label))
 			.SkipLast(skip)
 			.SelectMany(x => x.Value)
 			.GroupBy(x => x.Key)
@@ -66,7 +67,7 @@ public class State : IEnumerable<Hashtable>
 		get
 		{
 			var d = States
-				.Where(x => x.Label != null)
+				.Where(x => !string.IsNullOrEmpty(x.Label))
 				.Select(x =>
 				{
 					var h = new Hashtable(x.Value)
@@ -83,7 +84,7 @@ public class State : IEnumerable<Hashtable>
 		get
 		{
 			var v = States
-				.Where(x => x.Label == null);
+				.Where(x => string.IsNullOrEmpty(x.Label));
 			var d = v
 				.Select((x, i) =>
 				{
@@ -98,50 +99,37 @@ public class State : IEnumerable<Hashtable>
 					});
 					return d;
 				});
-			var h = d
-				.Reverse()
-				.Select(x => new Hashtable(x));
+			var h = d.Select(x => new Hashtable(x));
 			return h.ToArray();
 		}
 	}
-	public Hashtable SetLabel(string label, int skip = 0, bool clear = false, bool force = false)
+	public Hashtable SetLabel(string label, bool clear = false, bool force = false)
 	{
-		var last = Last(skip);
-		if (last == null)
-			throw new ArgumentException($"Can't skip ${skip} states!");
-		if (force)
+		if (force && !Tracing)
 		{
 			States.RemoveAll(x => label.CompareTo(x.Label) == 0);
 		}
 		else
 		{
-			var exist = States.Find(x => label.CompareTo(x.Label) == 0);
+			var exist = Tracing ? null : States.Find(x => label.CompareTo(x.Label) == 0);
 			if (null != exist)
 			{
 				throw new InvalidOperationException($"'${label}' already exists!");
 			}
 		}
 		var nextState = clear
-			? last.ToDictionary(x => x.Key, x => default(PSObject))
-			: new Dictionary<string, PSObject?>(last);
-		if (skip > 0)
-		{
-			int from = States.FindIndex(x => x.Label == null);
-			int cnt = States.FindAll(x => x.Label == null).Count();
-			States.RemoveRange(from, cnt - skip);
-			if (!clear)
-				States.Insert(from, new StateValue(null, nextState));
-			States.Insert(from, new StateValue(label, last));
-		}
-		else
-		{
-			States.Add(new StateValue(label, last));
-			States.RemoveAll(x => x.Label == null);
-			States.Add(new StateValue(null, nextState));
-			_current = States.Last();
-		}
+			? Last().ToDictionary(x => x.Key, x => default(PSObject))
+			: new Dictionary<string, PSObject?>(Last());
 
-		return new Hashtable(last);
+		States.Add(new StateValue(label, Last()));
+		if (!Tracing)
+		{
+			States.RemoveAll(x => string.IsNullOrEmpty(x.Label));
+		}
+		States.Add(new StateValue(string.Empty, nextState));
+		_current = States.Last();
+
+		return new Hashtable(Last());
 	}
 	IEnumerator<Hashtable> IEnumerable<Hashtable>.GetEnumerator()
 	{
@@ -153,10 +141,11 @@ public class State : IEnumerable<Hashtable>
 		IEnumerable<Hashtable> en = new[] { new Hashtable(Last()) };
 		return en.GetEnumerator();
 	}
-	public State(string name, List<StateValue> states)
+	public State(string name, List<StateValue> states, bool trace)
 	{
 		Name = name;
 		States = states;
+		Tracing = trace;
 		_current = States.Last();
 	}
 }
@@ -165,7 +154,7 @@ public static class StateMachine
 	public static IDictionary<PSObject, List<StateValue>> StateNames { get; set; }
 		= new Dictionary<PSObject, List<StateValue>>();
 	public static State? Default { get; set; }
-	public static State Add(string name, string[] members, bool force)
+	public static State Add(string name, string[] members, bool force, bool trace)
 	{
 		if (StateNames.ContainsKey(name) && force)
 		{
@@ -174,8 +163,8 @@ public static class StateMachine
 		var d = new Dictionary<string, PSObject?>();
 		foreach (var fn in members)
 			d.Add(fn, null);
-		StateNames.Add(name, new List<StateValue> { new StateValue(null, d) });
-		Default = new State(name, StateNames[name]);
+		StateNames.Add(name, new List<StateValue> { new StateValue(string.Empty, d) });
+		Default = new State(name, StateNames[name], trace);
 
 		return Default;
 	}
