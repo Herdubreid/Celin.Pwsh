@@ -102,38 +102,4 @@ public class Use : PSCmdlet
 				WriteObject(new Hashtable(label.Value));
 		}
 	}
-
-	[Cmdlet(VerbsLifecycle.Resume, Nouns.Base)]
-	public class Resume : BaseCmdlet
-	{
-		protected override void ProcessRecord()
-		{
-			base.ProcessRecord();
-
-			StateMachine.Default?.Resume();
-		}
-	}
-
-	[Cmdlet(VerbsCommon.Undo, Nouns.Base)]
-	public class Undo : BaseCmdlet
-	{
-		protected override void ProcessRecord()
-		{
-			base.ProcessRecord();
-
-			StateMachine.Default?.Undo();
-		}
-	}
-	[Cmdlet(VerbsLifecycle.Confirm, Nouns.Base)]
-	public class Confirm : BaseCmdlet
-	{
-		[Parameter(Position = 0, Mandatory = true)]
-		public required string Label { get; set; }
-		protected override void ProcessRecord()
-		{
-			base.ProcessRecord();
-
-			StateMachine.Default?.SetLabel(Label);
-		}
-	}
 }
