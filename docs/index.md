@@ -1,20 +1,18 @@
 ---
 layout: default
-title: Overview
+title: Modules
 nav_order: 1
+has_children: true
 ---
+
 # Overview
 
-A PowerShell Module for script state management.
+Utility Powershell Modules.
 
-## Background
+## Celin.State
 
-Like any scripting language, there is not much discipline around creating and using variable.  Variables are disposable objects requiring trivial effort.
+A Module for script state management.
 
-The undisciplined, unstructured, easy come easy go design is great for task oriented scripts.
+## Celin.Po
 
-Proliferation of variables with different scope can however be a headache for  maintenance and troubleshooting of application-type scripts.  
-
-## Objective
-
-A simple way to manage variables as state objects.
+A Module to convert and merge Hashtables and PSCustomObjects.
