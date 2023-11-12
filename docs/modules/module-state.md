@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Celin.State
-nav_order: 1
 parent: Modules
 has-children: true
+nav_order: 1
 ---
 
 # Celin.State

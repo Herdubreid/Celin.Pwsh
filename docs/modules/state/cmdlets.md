@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Celin.State Cmdlets
-nav_order: 1
 parent: Celin.State
 grand-parent: Modules
+nav_order: 1
 ---
 
 # Celin.State Cmdlets Reference
