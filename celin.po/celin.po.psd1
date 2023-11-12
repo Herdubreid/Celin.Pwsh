@@ -103,7 +103,7 @@ PrivateData = @{
         LicenseUri = 'https://raw.githubusercontent.com/Herdubreid/celin.pwsh/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://celin.io/Celin.Pwsh/'
+        ProjectUri = 'https://celin.io/celin.pwsh/'
 
         # A URL to an icon representing this module.
         IconUri = 'https://raw.githubusercontent.com/Herdubreid/herdubreid.github.io/master/favicon.ico'
