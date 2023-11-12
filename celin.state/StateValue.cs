@@ -55,7 +55,7 @@ public class State : IEnumerable<Hashtable>
 			});
 	public void Undo()
 	{
-		if (States.Count > 1)
+		if (Values.Count() > 1)
 			States.RemoveAt(States.Count - 1);
 		else
 			throw new InvalidOperationException("Can't undo initial state");
@@ -82,7 +82,7 @@ public class State : IEnumerable<Hashtable>
 		get
 		{
 			var v = States
-				.Where(x => string.IsNullOrEmpty(x.Label));
+				.ReverseTakeWhile(x => string.IsNullOrEmpty(x.Label));
 			var d = v
 				.Select((x, i) =>
 				{

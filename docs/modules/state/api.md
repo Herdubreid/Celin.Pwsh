@@ -21,10 +21,20 @@ $test
 
 ##### [PSObject] this[string member]
 
-Read-only member accessor.
+Member accessor.
 
 ```powershell
-# Get the value of member 'a'
+# Set the value of member "a"
+# Members are case sensitive and must be enclosed in quotes!
+$var["a"] = "This is a Value"
+# Get the value of member "a"
+$var["a"]
+# Using the Set-Celin.State cmdlet Alias cstate
+# can make the script more readable.
+cstate a "A Set with cstate"
+"Pipe A" | cstate a
+# And using the state variable dot syntax
+# to read members
 $var.a
 ```
 
@@ -76,7 +86,7 @@ $var.trace
 
 ##### [Hashtable[]] _Labels_
 
-Returns an array of labels as `Hashtable`.
+Returns an array of labels as `Hashtable`.  The label uses '#' as membe name (uses # inside quotation marks when referenced).
 
 ```powershell
 # Display Labels
