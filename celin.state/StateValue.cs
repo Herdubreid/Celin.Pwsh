@@ -42,7 +42,7 @@ public class State : IEnumerable<Hashtable>
 			}
 		}
 	}
-	public Dictionary<string, PSObject?> Last(int skip = 0)
+	protected Dictionary<string, PSObject?> Last(int skip = 0)
 		=> States
 			.Where(x => string.IsNullOrEmpty(x.Label))
 			.SkipLast(skip)
@@ -53,16 +53,14 @@ public class State : IEnumerable<Hashtable>
 				var l = group.Where(x => x.Value != null);
 				return l.Any() ? l.Last().Value : null;
 			});
-	public void Resume()
-		=> _current = States.Last();
 	public void Undo()
 	{
 		if (States.Count > 1)
 			States.RemoveAt(States.Count - 1);
-
-		throw new InvalidOperationException("Can't undo initial state");
+		else
+			throw new InvalidOperationException("Can't undo initial state");
 	}
-	public Array Labels
+	public IEnumerable<Hashtable> Labels
 	{
 		get
 		{
@@ -79,7 +77,7 @@ public class State : IEnumerable<Hashtable>
 			return d.ToArray();
 		}
 	}
-	public Array Values
+	public IEnumerable<Hashtable> Values
 	{
 		get
 		{
