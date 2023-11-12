@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Celin.State Api
-parent: Celin.State
+title: State Api
+parent: State
 grand-parent: Modules
 nav_order: 1
 ---
