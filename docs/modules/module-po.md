@@ -14,7 +14,7 @@ A Module to convert/merge `PSCustomObject` and `Hashtable` variables.
 ### Install Module
 
 ```powershell
-# Make sure to use the AllowPrerelease flag
+# Use the AllowPrerelease flag for latest Prerelease
 install-Module celin.po -AllowPrerelease
 ```
 
@@ -54,5 +54,8 @@ Merge a list of `PSCustomObject` and `Hashtable` objects.
 
 _Objects_ [PSObject[]]
 : A list of objects to merge.
+
+_NameValuePair_ (Optional)
+: Transforms `{ Name = <name>; Value = <value> }` object into `{ <name> = <value> }`.
 
 Returns a `PSCustomObject` with merged members from _Objects_.

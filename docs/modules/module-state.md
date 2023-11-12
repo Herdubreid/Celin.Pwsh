@@ -23,7 +23,7 @@ A simple way to manage variables as state objects.
 ### Install Module
 
 ```powershell
-# Make sure to use the AllowPrerelease flag
+# Use the AllowPrerelease flag for latest Prerelease
 install-Module celin.state -AllowPrerelease
 ```
 
