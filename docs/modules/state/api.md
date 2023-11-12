@@ -10,11 +10,11 @@ nav_order: 2
 
 Most of `Celin.State` functionality is provided as an `Api` on the state variable, returned by the `New-Celin.State` or `Use-Celin.State` Cmdlets.
 
-#### [PSObject] this[string member]
+### [PSObject] this[string member]
 
  Member accessor.
 
-#### [Hashtable] _SetLabel_ (string label, bool clear = false, bool force = false)
+##### [Hashtable] _SetLabel_ (string label, bool clear = false, bool force = false)
 
 Sets the label name on the current state.
 
