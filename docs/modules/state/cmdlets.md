@@ -2,7 +2,7 @@
 layout: default
 title: Celin.State Cmdlets
 parent: Celin.State
-grand-parent: Modules
+grand_parent: Modules
 nav_order: 1
 ---
 
