@@ -2,7 +2,7 @@
 layout: default
 title: Celin.State
 parent: Modules
-has-children: true
+has_children: true
 nav_order: 1
 ---
 
