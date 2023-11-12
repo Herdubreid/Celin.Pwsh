@@ -3,11 +3,11 @@ remote_theme: just-the-docs/just-the-docs
 
 color_scheme: dark
 
-baseurl: "/Celin.Pwsh"
+baseurl: "/celin.pwsh"
 url: "https://celin.io"
 aux_links:
   "Celin.Pwsh on GitHub":
-    - "//github.com/Herdubreid/Celin.Pwsh"
+    - "//github.com/Herdubreid/celin.pwsh"
 
 search_enabled: true
 search.heading_level: 3

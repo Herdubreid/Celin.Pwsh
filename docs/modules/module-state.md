@@ -3,6 +3,7 @@ layout: default
 title: Celin.State
 nav_order: 1
 parent: Modules
+has-children: true
 ---
 
 # Celin.State
@@ -34,7 +35,6 @@ An example to demonstrate some basic concepts.
 # Initialise a new state 'test' with members 'a', 'b' and 'c'
 # The Force flag overrides an existing state
 $var = new-celin.state test a,b,c -Force
-
 # Set member 'a'
 Set-Celin.State a "This is a Test for A"
 # Display the state
@@ -43,7 +43,6 @@ $var
 cstate c 200
 # Display the state
 $var
-
 # Set member 'a' to a new value
 cstate a "New Test for A"
 # Display the state
@@ -55,20 +54,14 @@ $var.states
 $var.setlabel("my label")
 # A label state record has been consolidated with the label
 $var.states
-
 # Set member 'a' using the index method
 $var["a"] = "New Label Test"
 # Another state record is added
 $var.states
 # Place another label and start with a clear state
-# The second parameter is a skipper:
-# 0 - Label current state
-# 1 - Label previous state
-# n - Label nth previous state
-$var.setlabel("second label", 0, $true)
+$var.setlabel("second label", $true)
 # Values are now cleared
 $var
-
 # Set new values
 cstate a "More tests"
 cstate b $true
@@ -88,66 +81,3 @@ $label.a
 # Write a Trace log with changes
 $var.trace
 ```
-
-## Reference
-
-### New-Celin.State
-
-Create a state.
-
-_Name_ [string]
-: A unique name for the state.
-
-_Members_ [string[]]
-: A list of the state members.  Members can't be added or removed after state creation.
-
-_Force_ (Optional)
-: If state name already exist, then override it.  Otherwise an exception is thrown for duplicate state names.
-
-_UseIfExist_ (Optional)
-: If state name already exist, then use it.  The _Force_ option is ignored as well as the _Members_ parameter.
-
-_Trace_ (Optional)
-: If set, then state history not purged when Labelled.  Useful for debugging.
-
-Returns the state variable.
-
-### Use-Celin.State
-
-Use an existing state.
-
-_Name_ [string]
-: The state name.  An exception is thrown if it doesn't exist.
-
-_Trace_
-: See explanation above.
-
-Retruns the state variable.
-
-### Set-Celin.State (Alias cstate)
-
-Set a state member.
-
-_Member_ [string]
-: Member name (case sensitive).  Throws an exception for invalid name. 
-
-_Value_ [psobject]
-: The value to set the member.
-
-_FalseIfNull_ (Optional)
-: `null` value is treated like no-value, which means it will be overriden by any cascading value (previously set).  Instead to force no-value, it can be set to false (works the same when testing in an `if` statement).  The _FalseIfNull_ flag will replace `null` with `false` for this purpose.
-
-### Get-Celin.State
-
-Get state with set Label.
-
-_Label_ [string]
-: The states label.
-
-_Name_ [string] (Optional)
-: State name.  Uses current state if not set.
-
-_FalseIfNone_ (Optional)
-: Returns false instead of throwing exception if label not found.
-
-Returns the Labelled state.
