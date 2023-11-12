@@ -30,7 +30,7 @@ public class State : IEnumerable<Hashtable>
 			{
 				if (_current.Value[member] != null)
 				{
-					var d = Last().ToDictionary(x => x.Key, x => default(PSObject));
+					var d = Last.ToDictionary(x => x.Key, x => default(PSObject));
 					States.Add(new StateValue(string.Empty, d));
 					_current = States.Last();
 				}
@@ -42,10 +42,10 @@ public class State : IEnumerable<Hashtable>
 			}
 		}
 	}
-	protected Dictionary<string, PSObject?> Last(int skip = 0)
+	protected Dictionary<string, PSObject?> Last
 		=> States
-			.Where(x => string.IsNullOrEmpty(x.Label))
-			.SkipLast(skip)
+			.ReverseTakeWhile(x => string.IsNullOrEmpty(x.Label))
+			.Reverse()
 			.SelectMany(x => x.Value)
 			.GroupBy(x => x.Key)
 			.ToDictionary(group => group.Key, group =>
@@ -82,7 +82,8 @@ public class State : IEnumerable<Hashtable>
 		get
 		{
 			var v = States
-				.ReverseTakeWhile(x => string.IsNullOrEmpty(x.Label));
+				.ReverseTakeWhile(x => string.IsNullOrEmpty(x.Label))
+				.Reverse();
 			var d = v
 				.Select((x, i) =>
 				{
@@ -116,10 +117,11 @@ public class State : IEnumerable<Hashtable>
 			}
 		}
 		var nextState = clear
-			? Last().ToDictionary(x => x.Key, x => default(PSObject))
-			: new Dictionary<string, PSObject?>(Last());
+			? Last.ToDictionary(x => x.Key, x => default(PSObject))
+			: new Dictionary<string, PSObject?>(Last);
 
-		States.Add(new StateValue(label, Last()));
+		var lb = new StateValue(label, Last);
+		States.Add(lb);
 		if (!Tracing)
 		{
 			States.RemoveAll(x => string.IsNullOrEmpty(x.Label));
@@ -127,16 +129,20 @@ public class State : IEnumerable<Hashtable>
 		States.Add(new StateValue(string.Empty, nextState));
 		_current = States.Last();
 
-		return new Hashtable(Last());
+		var ht = new Hashtable(lb.Value)
+					{
+						{ "#", lb.Label }
+					};
+		return ht;
 	}
 	IEnumerator<Hashtable> IEnumerable<Hashtable>.GetEnumerator()
 	{
-		IEnumerable<Hashtable> en = new[] { new Hashtable(Last()) };
+		IEnumerable<Hashtable> en = new[] { new Hashtable(Last) };
 		return en.GetEnumerator();
 	}
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		IEnumerable<Hashtable> en = new[] { new Hashtable(Last()) };
+		IEnumerable<Hashtable> en = new[] { new Hashtable(Last) };
 		return en.GetEnumerator();
 	}
 	public State(string name, List<StateValue> states, bool trace)

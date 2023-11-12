@@ -51,6 +51,7 @@ $var
 # preserving previous values
 $var.states
 # To consolidate a state, stick a label for later reference
+# The labelled state is returned
 $var.setlabel("my label")
 # A label state record has been consolidated with the label
 $var.states
