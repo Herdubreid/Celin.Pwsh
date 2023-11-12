@@ -50,7 +50,7 @@ Returns a `PSCustomObject` with the _Members_.
 
 ## Add-Celin.Po (Alias cpo)
 
-Merge a list of `PSCustomObject` and `Hashtable` objects.
+Merge a list of one or more `PSCustomObject` and `Hashtable` objects.
 
 _Objects_ [PSObject[]]
 : A list of objects to merge.
