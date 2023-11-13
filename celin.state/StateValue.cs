@@ -74,7 +74,9 @@ public class State : IEnumerable<Hashtable>
 					};
 					return h;
 				});
-			return d.ToArray();
+			return d
+				.Reverse()
+				.ToArray();
 		}
 	}
 	public IEnumerable<Hashtable> Values
@@ -98,8 +100,10 @@ public class State : IEnumerable<Hashtable>
 					});
 					return d;
 				});
-			var h = d.Select(x => new Hashtable(x));
-			return h.ToArray();
+			return d
+				.Select(x => new Hashtable(x))
+				.Reverse()
+				.ToArray();
 		}
 	}
 	public Hashtable SetLabel(string label, bool clear = false, bool force = false)
