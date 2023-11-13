@@ -86,25 +86,33 @@ $var.trace
 
 ##### [Hashtable[]] _Labels_
 
-Returns an array of labels as `Hashtable`.  The label uses '#' as membe name (uses # inside quotation marks when referenced).
+Returns an array of labels as `Hashtable` in __Reverse__ order.  The label uses '#' as membe name (uses # inside quotation marks when referenced).
 
 ```powershell
 # Display Labels
 $var.labels
+# Display the last Label set
+$var.labels[0]
+# Display the first Label set
+$var.labels[$var.labels.length - 1]
 ```
 
 ##### [Hashtable[]] _Values_
 
-Returns the current states values as `Hashtable`.
+Returns the current states values as `Hashtable` in __Reverse__ order.
 
 ```powershell
 # Display Values
 $var.values
+# Display Current Values (same as $var)
+$var.values[0]
+# Display Previous Values
+$var.values[1]
 ```
 
 ##### [List<StateValue>] _States_
 
-Returns the state as a list of `StateValue` type, this is native type.
+Returns the state as a list of `StateValue` type, which is the native type.
 
 ```powershell
 # Display state
