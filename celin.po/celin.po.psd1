@@ -12,7 +12,7 @@
 RootModule = 'celin.po.dll'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -74,13 +74,14 @@ FunctionsToExport = @()
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @(
     'New-Celin.Po',
-    'Add-Celin.Po')
+    'Add-Celin.Po',
+    'Select-Celin.Po')
 
 # Variables to export from this module
 VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = @('cpo')
+AliasesToExport = @('cpo','new-cpo','filter-cpo')
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
