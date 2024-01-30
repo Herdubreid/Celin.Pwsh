@@ -2,4 +2,4 @@
 
 Powershell Utility Cmdlets.
 
-See [Documentation](https://celin.io/Celin.Pwsh) for more.
+See [Documentation](https://celin.io/celin.pwsh) for more.

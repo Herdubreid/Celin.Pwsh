@@ -40,31 +40,3 @@ _Trace_
 : See explanation above.
 
 Retruns the state variable.
-
-## Set-Celin.State (Alias cstate)
-
-Set a state member.
-
-_Member_ [string]
-: Member name (case sensitive).  Throws an exception for invalid name. 
-
-_Value_ [psobject]
-: The value to set the member.
-
-_FalseIfNull_ (Optional)
-: `null` value is treated like no-value, which means it will be overriden by any cascading value (previously set).  Instead to force no-value, it can be set to false (works the same when testing in an `if` statement).  The _FalseIfNull_ flag will replace `null` with `false` for this purpose.
-
-## Get-Celin.State
-
-Get state with set Label.
-
-_Label_ [string]
-: The states label.
-
-_Name_ [string] (Optional)
-: State name.  Uses current state if not set.
-
-_FalseIfNone_ (Optional)
-: Returns false instead of throwing exception if label not found.
-
-Returns the Labelled state.

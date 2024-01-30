@@ -36,49 +36,47 @@ An example to demonstrate some basic concepts.
 # The Force flag overrides an existing state
 $var = new-celin.state test a,b,c -Force
 # Set member 'a'
-Set-Celin.State a "This is a Test for A"
+$var.a = "This is a Test for A"
 # Display the state
 $var
-# Set member 'b' using Alias 'cstate'
-cstate c 200
+# Set member 'b'
+$var.b = 200
 # Display the state
 $var
 # Set member 'a' to a new value
-cstate a "New Test for A"
+$var.a = "New Test for A"
 # Display the state
 $var
 # Instead of overriding 'a', a new state record is created
 # preserving previous values
-$var.states
+$var.GetStates
 # To consolidate a state, stick a label for later reference
 # The labelled state is returned
-$var.setlabel("my label")
+$var.SetLabel("my label")
 # A label state record has been consolidated with the label
-$var.states
-# Set member 'a' using the index method
-$var["a"] = "New Label Test"
+$var.GetStates
+# Set member 'a'
+$var.a = "New Label Test"
 # Another state record is added
-$var.states
+$var.GetStates
 # Place another label and start with a clear state
-$var.setlabel("second label", $true)
+$var.SetLabel("second label", $true)
 # Values are now cleared
 $var
 # Set new values
-cstate a "More tests"
-cstate b $true
-cstate c 350
+$var.a = "More tests"
+$var.b = $true
+$var.c = 350
 # Display values
 $var
-# Individual values can be accessed with the dot syntax
+# Individual values can be used with the dot syntax
 $var.c + 200
-# Display labels array
-$var.labels
-# Retrieve individual label
-get-celin.state "my label"
+# Display labels array, the label is the '#' member
+$var.GetLabels
 # Retrieve label PowerShell style
-$label = $var.labels | where-Object {$_.'#' -eq "my label"}
+$label = $var.GetLabels | where-Object {$_.'#' -eq "my label"}
 $label
 $label.a
 # Write a Trace log with changes
-$var.trace
+$var.GetTrace
 ```

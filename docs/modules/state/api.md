@@ -19,25 +19,6 @@ $test = Use-Celin.State test
 $test
 ```
 
-##### [PSObject] this[string member]
-
-Member accessor.
-
-```powershell
-# Set the value of member "a"
-# Members are case sensitive and must be enclosed in quotes!
-$var["a"] = "This is a Value"
-# Get the value of member "a"
-$var["a"]
-# Using the Set-Celin.State cmdlet Alias cstate
-# can make the script more readable.
-cstate a "A Set with cstate"
-"Pipe A" | cstate a
-# And using the state variable dot syntax
-# to read members
-$var.a
-```
-
 ##### [Hashtable] _SetLabel_ (string label, bool clear = false, bool force = false)
 
 Sets the label name on the current state.
@@ -49,72 +30,72 @@ Sets the label name on the current state.
 $done = $var.setLabel("done", $true, $true)
 ```
 
-##### _Undo()_
+##### _UndoLast()_
 
 Deletes that latest state, making current state the previous.
 
 ```powershell
-$var.undo()
+$var.UndoLast()
 ```
 
-##### [string] _Name_
+##### [string] _GetName_
 
 Returns the state's name.
 
 ```powershell
 # Display the state's name
-"The State's name is $($var.name)"
+"The State's name is $($var.GetName)"
 ```
 
-##### [bool] _Tracing_
+##### [bool] _GetTracing_
 
 Returns `true` if state flagged with `Trace`. 
 
 ```powershell
 # Write if the state is tracing
-"The $($var.name) state is$($var.tracing ? $null : ' NOT') tracing!"
+"The $($var.GetName) state is$($var.GetTracing ? $null : ' NOT') tracing!"
 ```
 
-##### [PSCustomObject[]] Trace
+##### [object[]] _GetTrace_
 
-Returns the state as an array of `PSCustomObject` with all the member values as strings (using `ToString()`).
+Returns the state as an `object` array with all the member values as strings (using `ToString()`).
 
 ```powershell
 # Display the trace
-$var.trace
+$var.GetTrace
 ```
 
-##### [Hashtable[]] _Labels_
+##### [Hashtable[]] _GetLabels_
 
 Returns an array of labels as `Hashtable` in __Reverse__ order.  The label uses '#' as membe name (uses # inside quotation marks when referenced).
 
 ```powershell
 # Display Labels
-$var.labels
+$var.GetLabels
 # Display the last Label set
-$var.labels[0]
+$var.GetLabels[0]
 # Display the first Label set
-$var.labels[$var.labels.length - 1]
+$var.GetLabels[$var.GetLabels.length - 1]
 ```
 
-##### [Hashtable[]] _Values_
+##### [Hashtable[]] _GetValues_
 
 Returns the current states values as `Hashtable` in __Reverse__ order.
 
 ```powershell
 # Display Values
-$var.values
+$var.GetValues
 # Display Current Values (same as $var)
-$var.values[0]
+$var.GetValues[0]
 # Display Previous Values
-$var.values[1]
+$var.GetValues[1]
 ```
 
-##### [List<StateValue>] _States_
+##### [List<StateValue>] _GetStates_
 
 Returns the state as a list of `StateValue` type, which is the native type.
 
 ```powershell
 # Display state
-$var.states
+$var.GetStates
 ```
