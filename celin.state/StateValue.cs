@@ -26,7 +26,7 @@ public class State : DynamicObject, IEnumerable<Hashtable>
     {
         if (!_current.Value.ContainsKey(binder.Name))
             throw new PSArgumentException("Invalid Variable", binder.Name);
-        result = _current.Value[binder.Name];
+        result = GetLast[binder.Name];
         return true;
     }
     public override bool TrySetMember(SetMemberBinder binder, object? value)
